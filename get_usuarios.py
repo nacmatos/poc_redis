@@ -1,37 +1,44 @@
 #!/usr/bin/env python3
 
-import csv
 import argparse
+import csv
+import logging
 import random
 from timeit import default_timer as timer
 
 import redis
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert CSV to XML and store in Redis')
-    parser.add_argument('csv_file', type=str, help='Path to the CSV file')
-    parser.add_argument('redis_host', type=str, help='Redis host address')
-    parser.add_argument('redis_port', type=int, help='Redis port number')
-    parser.add_argument('redis_db', type=int, help='Redis database number')
+    parser = argparse.ArgumentParser(description='Retrive all keys and sample 10 and timeit')
+    parser.add_argument('--redis_host', type=str, help='Redis host address', default='127.0.0.1')
+    parser.add_argument('--redis_port', type=int, help='Redis port number', default=6379)
+    parser.add_argument('--redis_db', type=int, help='Redis database number', default=0)
     args = parser.parse_args()
 
-    redis_client = redis.Redis(host=args.redis_host, port=args.redis_port, db=args.redis_db)
+    logging.basicConfig(
+        format='%(asctime)s | %(levelname)s | %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=logging.DEBUG
+    )
 
-    key_list=[]
-    with open(args.csv_file, 'r') as file:
-        csv_reader = csv.reader(file)
-        header = next(csv_reader)
-        for i, row in enumerate(csv_reader):
-            key_list.append(row[0])
-
+    redis_client = redis.Redis(host=args.redis_host, port=args.redis_port, db=args.redis_db, decode_responses=True)
+    
     start = timer()
-    for k in random.sample(key_list,10):
-     try:
-       print(redis_client.get(k).decode('utf-8'))
-     except:
-       print(f'{k} not found')
+    logging.info(f'Retriving keys...')
+    key_list = [ x for x in redis_client.keys() ]
+    logging.info(f'...{len(key_list)} keys.')
     end = timer()
-    print(f'Elapse {end - start}s')
+    logging.info('Elapse {:3.6f}s'.format(end - start))
+
+    start = timer()    
+    for k in random.sample(key_list, 10):
+        try:
+            logging.info(redis_client.get(k)[0:64])
+        except Exception as e:
+            logging.error(f'{k} not found')
+    end = timer()
+    logging.info('Elapse {:3.6f}s'.format(end - start))
+
 
 if __name__ == '__main__':
     main()

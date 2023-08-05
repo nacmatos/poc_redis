@@ -1,38 +1,46 @@
 #!/usr/bin/env python3
 
-import csv
 import argparse
+import csv
+import logging
 import random
 from timeit import default_timer as timer
 
 import redis
 
 def main():
-    parser = argparse.ArgumentParser(description='Convert CSV to XML and store in Redis')
-    parser.add_argument('csv_file', type=str, help='Path to the CSV file')
-    parser.add_argument('redis_host', type=str, help='Redis host address')
-    parser.add_argument('redis_port', type=int, help='Redis port number')
-    parser.add_argument('redis_db', type=int, help='Redis database number')
+    parser = argparse.ArgumentParser(description='Retrive all keys and get it unitl interrupt')
+    parser.add_argument('--redis_host', type=str, help='Redis host address', default='127.0.0.1')
+    parser.add_argument('--redis_port', type=int, help='Redis port number', default=6379)
+    parser.add_argument('--redis_db', type=int, help='Redis database number', default=0)
     args = parser.parse_args()
 
-    redis_client = redis.Redis(host=args.redis_host, port=args.redis_port, db=args.redis_db)
+    logging.basicConfig(
+        format='%(asctime)s | %(levelname)s | %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        level=logging.DEBUG
+    )
 
-    key_list=[]
-    with open(args.csv_file, 'r') as file:
-        csv_reader = csv.reader(file)
-        header = next(csv_reader)
-        for i, row in enumerate(csv_reader):
-            key_list.append(row[0])
+    redis_client = redis.Redis(host=args.redis_host, port=args.redis_port, db=args.redis_db, decode_responses=True)
+    
+    start = timer()
+    logging.info(f'Retriving keys...')
+    key_list = [ x for x in redis_client.keys() ]
+    logging.info(f'...{len(key_list)} keys.')
+    end = timer()
+    logging.info('Elapse {:3.6f}s'.format(end - start))
+    logging.info(type(key_list))
 
     while True:
-        k=random.sample(key_list,1)
-        start = timer()
+        start = timer()    
+        k=random.sample(key_list, 1)[0]
         try:
-            xml=redis_client.get(k[0]).decode('utf-8')
+            xml=redis_client.get(k)[0:64]
         except:
             xml='not found'
         end = timer()
-        print(f'{end - start}s | {xml[0:35]}')
+        logging.info('Elapse {:3.6f}s xml={}'.format(end - start,xml))
+
 
 if __name__ == '__main__':
     main()
