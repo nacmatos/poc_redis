@@ -21,7 +21,8 @@ def main():
       datefmt='%Y-%m-%d %H:%M:%S',
       level=logging.DEBUG
     )
-    redis_client = redis.Redis(host=args.redis_host, port=args.redis_port, db=args.redis_db)
+
+    redis_client = redis.Redis(host=args.redis_host, port=args.redis_port, db=args.redis_db, decode_responses=True)
 
     with open(args.csv_file, 'r') as file:
         try:

@@ -1,2 +1,3 @@
 mimesis
 redis
+hiredis

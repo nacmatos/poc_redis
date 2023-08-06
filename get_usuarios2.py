@@ -28,16 +28,19 @@ def main():
     key_list = [ x for x in redis_client.keys() ]
     logging.info(f'...{len(key_list)} keys.')
     end = timer()
-    logging.info('Elapse {:3.6f}s'.format(end - start))
+    logging.info('Elapse {:2.6f}s'.format(end - start))
     logging.info(type(key_list))
 
     while True:
-        start = timer()    
         k=random.sample(key_list, 1)[0]
+        start = timer()    
         try:
-            xml=redis_client.get(k)[0:64]
+          xml=redis_client.get(k)[0:64]
+        except KeyboardInterrupt:
+          print('\nCTRL-C! Exiting...')
+          break
         except:
-            xml='not found'
+          xml='not found'
         end = timer()
         logging.info('Elapse {:3.6f}s xml={}'.format(end - start,xml))
 

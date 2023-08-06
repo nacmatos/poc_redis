@@ -14,23 +14,26 @@
  \o/ All tests passed without errors!
 ```
 
-## Iniciando o servidor 
-```
-$ ./redis-6.2.13/src/redis-server
-...
-               Running in standalone mode
-               Port: 6379
-...
-```
-
 ## Preparando o virtual env do Python e instalando os módulos necessários
 ```
  $ python3 -m venv --prompt redis .pyenv
  $ source ./.pyenv/bin/activate
  $ pip3 install --upgrade pip
  $ pip install redis mimesis
+ $ source ./.pyenv/bin/activate
+
+ $ ln -sf $VIRTUAL_ENV/../redis-6.2.13/src/redis-server $VIRTUAL_ENV/bin/redis-server
+ $ ln -sf $VIRTUAL_ENV/../redis-6.2.13/src/redis-cli    $VIRTUAL_ENV/bin/redis-cli
 ```
 
+## Iniciando o servidor 
+```
+$ redis-server
+...
+               Running in standalone mode
+               Port: 6379
+...
+```
 
 ## Gerando o CSV
 ```

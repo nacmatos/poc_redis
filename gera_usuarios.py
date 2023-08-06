@@ -10,4 +10,4 @@ d = mimesis.Datetime()
 p_br = mimesis.builtins.BrazilSpecProvider()
 
 print('cpf,nome,email,idade,ultacesso');
-for i in range(0,int(sys.argv[1])): print(f'{p_br.cpf()},{p.full_name()},{p.email()},{p.age()},{d.date()}')
+for i in range(0,int(sys.argv[1])): print(f'{p_br.cpf()},{p.full_name()},{p.email()},{p.age()},{d.date()}', flush=True)
