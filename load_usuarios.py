@@ -30,7 +30,7 @@ def main():
             header = next(csv_reader)
             for (recno, row) in enumerate(csv_reader):
                 if (recno % 10000) == 0: logging.info(recno)
-                redis_key = row[0] # Assuming the first column is the key for Redis
+                redis_key = 'usr:'+row[0] # Assuming the first column is the key for Redis
                 root = ET.Element("data")
                 item = ET.SubElement(root, "item")
                 for i, field in enumerate(row):

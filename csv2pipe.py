@@ -14,7 +14,7 @@ def main():
             item = ET.SubElement(root, "item")
             for i, field in enumerate(row):
                 ET.SubElement(item, header[i]).text = field
-            print('SET "{}" "{}"'.format(redis_key, ET.tostring(root, encoding='utf-8').decode()), flush=True)
+            print('SET "usr:{}" "{}"'.format(redis_key, ET.tostring(root, encoding='utf-8').decode()), flush=True)
     except Exception as e:
         print(e)
 

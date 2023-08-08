@@ -25,7 +25,7 @@ def main():
     
     start = timer()
     logging.info(f'Retriving keys...')
-    key_list = [ x for x in redis_client.keys() ]
+    key_list = [ x for x in redis_client.scan_iter('*', count=10000) ]
     logging.info(f'...{len(key_list)} keys.')
     end = timer()
     logging.info('Elapse {:3.6f}s'.format(end - start))
