@@ -110,3 +110,12 @@ Todos os scripts que fazem acesso ao Redis consideram que por default ele está 
  ... XML ...
 
 ```
+
+## Autor
+
+Nereu Matos - nacmatos  
+
+## License
+
+This project is licensed under the MIT License.  
+

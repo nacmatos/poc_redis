@@ -10,6 +10,7 @@ import redis
 def main():
     parser = argparse.ArgumentParser(description='Convert CSV to XML and store in Redis')
     parser.add_argument('csv_file', type=str, help='Path to the CSV file')
+    parser.add_argument('--prefix', type=str, help='Key prefix', default='usr')
     parser.add_argument('--redis_host', type=str, help='Redis host address', default='127.0.0.1')
     parser.add_argument('--redis_port', type=int, help='Redis port number', default=6379)
     parser.add_argument('--redis_db', type=int, help='Redis database number', default=0)
@@ -30,12 +31,13 @@ def main():
             header = next(csv_reader)
             for (recno, row) in enumerate(csv_reader):
                 if (recno % 10000) == 0: logging.info(recno)
-                redis_key = 'usr:'+row[0] # Assuming the first column is the key for Redis
+                redis_key = f'{args.prefix}:{row[0]}' # Assuming the first column is the key for Redis
                 root = ET.Element("data")
                 item = ET.SubElement(root, "item")
                 for i, field in enumerate(row):
                     ET.SubElement(item, header[i]).text = field
                 redis_client.set(redis_key, ET.tostring(root, encoding='utf-8').decode(), ex=args.expire_time)
+                logging.info(redis_key)
         except Exception as e:
             logging.error(e)
 
